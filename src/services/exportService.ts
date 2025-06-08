@@ -176,7 +176,7 @@ class ExportService {
   private downloadCSV(data: ExportData): void {
     const headers = [
       'ID',
-      'Title', 
+      'Title',
       'Content',
       'Description',
       'Category',
@@ -186,14 +186,14 @@ class ExportService {
     ];
 
     const rows = data.prompts.map(prompt => [
-      prompt.id,
-      this.escapeCsvField(prompt.title),
-      this.escapeCsvField(prompt.content),
+      this.escapeCsvField(prompt.id || ''),
+      this.escapeCsvField(prompt.title || ''),
+      this.escapeCsvField(prompt.content || ''),
       this.escapeCsvField(prompt.description || ''),
-      prompt.category,
-      prompt.tags ? prompt.tags.join('; ') : '',
-      prompt.version,
-      new Date(prompt.createdAt).toISOString()
+      this.escapeCsvField(prompt.category || ''),
+      this.escapeCsvField(prompt.tags ? prompt.tags.join('; ') : ''),
+      this.escapeCsvField(prompt.version || ''),
+      this.escapeCsvField(this.formatDate(prompt.createdAt))
     ]);
 
     const csvContent = [
@@ -207,10 +207,28 @@ class ExportService {
 
   // CSV字段转义
   private escapeCsvField(field: string): string {
-    if (field.includes(',') || field.includes('"') || field.includes('\n')) {
-      return `"${field.replace(/"/g, '""')}"`;
+    // 确保field是字符串
+    const str = String(field || '');
+
+    // 如果包含逗号、引号、换行符或回车符，需要用引号包围
+    if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+      // 将内部的引号转义为双引号
+      return `"${str.replace(/"/g, '""')}"`;
     }
-    return field;
+    return str;
+  }
+
+  // 格式化日期
+  private formatDate(date: any): string {
+    try {
+      if (!date) return '';
+      const d = new Date(date);
+      if (isNaN(d.getTime())) return '';
+      return d.toISOString();
+    } catch (error) {
+      console.warn('Failed to format date:', date, error);
+      return '';
+    }
   }
 
   // 下载文件
@@ -241,7 +259,26 @@ class ExportService {
         // 返回markdown预览（简化版）
         return `# Export Preview\n\nPrompts: ${data.prompts.length}\nCategories: ${data.categories.length}\nTags: ${data.tags.length}`;
       case 'csv':
-        return `CSV Export Preview\nPrompts: ${data.prompts.length}`;
+        // 生成CSV预览（前几行）
+        const headers = ['ID', 'Title', 'Content', 'Description', 'Category', 'Tags', 'Version', 'Created At'];
+        const previewRows = data.prompts.slice(0, 3).map(prompt => [
+          prompt.id || '',
+          (prompt.title || '').substring(0, 20) + '...',
+          (prompt.content || '').substring(0, 30) + '...',
+          (prompt.description || '').substring(0, 20) + '...',
+          prompt.category || '',
+          prompt.tags ? prompt.tags.slice(0, 2).join('; ') : '',
+          prompt.version || '',
+          this.formatDate(prompt.createdAt)
+        ]);
+
+        const csvPreview = [
+          headers.join(','),
+          ...previewRows.map(row => row.join(',')),
+          data.prompts.length > 3 ? `... and ${data.prompts.length - 3} more rows` : ''
+        ].filter(Boolean).join('\n');
+
+        return `CSV Export Preview:\n\n${csvPreview}`;
       default:
         return 'Unknown format';
     }

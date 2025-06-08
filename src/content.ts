@@ -1,4 +1,13 @@
-import { MESSAGE_TYPES } from './constants';
+// 内联消息类型常量，避免模块导入问题
+const MESSAGE_TYPES = {
+  GET_PROMPTS: 'GET_PROMPTS',
+  SAVE_PROMPT: 'SAVE_PROMPT',
+  DELETE_PROMPT: 'DELETE_PROMPT',
+  INSERT_TEXT: 'INSERT_TEXT',
+  GET_PAGE_INFO: 'GET_PAGE_INFO',
+  SHOW_PROMPT_SELECTOR: 'SHOW_PROMPT_SELECTOR',
+  COPY_TO_CLIPBOARD: 'COPY_TO_CLIPBOARD',
+} as const;
 
 class ContentScript {
   private floatingUI: HTMLElement | null = null;

@@ -17,12 +17,23 @@ export default defineConfig({
         entryFileNames: '[name].js',
         chunkFileNames: 'chunks/[name]-[hash].js',
         assetFileNames: '[name].[ext]',
-        // 不指定format，让Vite自动处理
+        // 强制内联所有模块，避免动态导入
+        inlineDynamicImports: false,
+        manualChunks: (id) => {
+          // 将background和content的依赖内联到主文件中
+          if (id.includes('background.ts') || id.includes('content.ts')) {
+            return undefined; // 不创建单独的chunk
+          }
+          // 其他文件可以创建chunks
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
+        },
       },
     },
     target: 'es2020',
     minify: false,
-    sourcemap: true, // 添加sourcemap便于调试
+    sourcemap: true,
   },
   resolve: {
     alias: {
