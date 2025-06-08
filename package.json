@@ -1,0 +1,52 @@
+{
+  "name": "prompt-manager",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A powerful Chrome extension for managing and organizing AI prompts with advanced version control",
+  "type": "module",
+  "author": "DylanDDeng",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DylanDDeng/PromptManager.git"
+  },
+  "keywords": [
+    "chrome-extension",
+    "ai",
+    "prompts",
+    "version-control",
+    "productivity"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build && npm run create-icons",
+    "create-icons": "node create-icons.js",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^5.17.1",
+    "@mui/material": "^5.17.1",
+    "@types/uuid": "^10.0.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.25.0",
+    "@types/chrome": "^0.0.326",
+    "@types/node": "^22.15.30",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.4.1",
+    "eslint": "^9.25.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.30.1",
+    "vite": "^6.3.5"
+  }
+}
