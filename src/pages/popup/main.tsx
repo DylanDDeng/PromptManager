@@ -1,41 +1,26 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
 import { AppProvider } from '../../contexts/AppContext';
+import { DynamicThemeProvider } from '../../components/common/ThemeProvider';
 import PopupApp from './PopupApp';
 
-// 创建主题
-const theme = createTheme({
-  palette: {
-    mode: 'light',
-  },
-  components: {
-    MuiCssBaseline: {
-      styleOverrides: {
-        body: {
-          margin: 0,
-          padding: 0,
-          width: '400px',
-          height: '600px',
-          overflow: 'hidden',
-        },
-      },
-    },
-  },
-});
+// Popup页面的自定义样式
+const popupStyles = {
+  width: '400px',
+  height: '600px',
+  overflow: 'hidden',
+};
 
 const container = document.getElementById('popup-root');
 if (container) {
   const root = createRoot(container);
   root.render(
     <React.StrictMode>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <AppProvider>
+      <AppProvider>
+        <DynamicThemeProvider customStyles={popupStyles}>
           <PopupApp />
-        </AppProvider>
-      </ThemeProvider>
+        </DynamicThemeProvider>
+      </AppProvider>
     </React.StrictMode>
   );
 }

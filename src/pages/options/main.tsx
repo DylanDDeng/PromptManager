@@ -1,28 +1,19 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
 import { AppProvider } from '../../contexts/AppContext';
+import { DynamicThemeProvider } from '../../components/common/ThemeProvider';
 import OptionsApp from './OptionsApp';
-
-// 创建主题
-const theme = createTheme({
-  palette: {
-    mode: 'light',
-  },
-});
 
 const container = document.getElementById('options-root');
 if (container) {
   const root = createRoot(container);
   root.render(
     <React.StrictMode>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <AppProvider>
+      <AppProvider>
+        <DynamicThemeProvider>
           <OptionsApp />
-        </AppProvider>
-      </ThemeProvider>
+        </DynamicThemeProvider>
+      </AppProvider>
     </React.StrictMode>
   );
 }

@@ -15,12 +15,18 @@ import {
   Paper,
 } from '@mui/material';
 import { useApp } from '../../../contexts/AppContext';
+import { useTranslation } from '../../../hooks/useTranslation';
 import { UserSettings } from '../../../types';
+import { ExportDialog } from '../../../components/common/ExportDialog';
+import { exportService, ExportItem } from '../../../services/exportService';
+import type { ExportFormat } from '../../../components/common/ExportDialog';
 
 const Settings: React.FC = () => {
   const { state, actions } = useApp();
+  const { t } = useTranslation();
   const [settings, setSettings] = useState<UserSettings>(state.settings);
   const [saveMessage, setSaveMessage] = useState<string>('');
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
 
   // 更新设置
   const updateSetting = <K extends keyof UserSettings>(
@@ -45,50 +51,48 @@ const Settings: React.FC = () => {
   const handleSave = async () => {
     try {
       await actions.saveSettings(settings);
-      setSaveMessage('设置保存成功！');
+      setSaveMessage(t('settingsSaved'));
       setTimeout(() => setSaveMessage(''), 3000);
     } catch (error) {
-      setSaveMessage('保存失败，请重试');
+      setSaveMessage(t('saveFailed'));
       setTimeout(() => setSaveMessage(''), 3000);
     }
   };
 
   // 重置设置
   const handleReset = () => {
-    if (window.confirm('确定要重置所有设置吗？')) {
+    if (window.confirm(t('resetConfirm'))) {
       setSettings(state.settings);
     }
   };
 
-  // 导出数据
-  const handleExport = async () => {
+  // 打开导出对话框
+  const handleExport = () => {
+    setExportDialogOpen(true);
+  };
+
+  // 执行导出
+  const handleExportConfirm = async (items: ExportItem[], format: ExportFormat) => {
     try {
-      const data = await actions.exportData();
-      const blob = new Blob([JSON.stringify(data, null, 2)], {
-        type: 'application/json',
-      });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `prompt-manager-backup-${new Date().toISOString().split('T')[0]}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      await exportService.exportData(items, state.categories, state.tags, format);
+      setSaveMessage(t('dataExported'));
+      setTimeout(() => setSaveMessage(''), 3000);
     } catch (error) {
       console.error('Export failed:', error);
+      setSaveMessage('导出失败，请重试');
+      setTimeout(() => setSaveMessage(''), 3000);
     }
   };
 
   return (
     <Box>
       <Typography variant="h5" gutterBottom>
-        设置
+        {t('settings')}
       </Typography>
 
       {saveMessage && (
-        <Alert 
-          severity={saveMessage.includes('成功') ? 'success' : 'error'} 
+        <Alert
+          severity={saveMessage.includes(t('settingsSaved')) ? 'success' : 'error'}
           sx={{ mb: 2 }}
         >
           {saveMessage}
@@ -98,31 +102,31 @@ const Settings: React.FC = () => {
       {/* 外观设置 */}
       <Paper sx={{ p: 2, mb: 2 }}>
         <Typography variant="h6" gutterBottom>
-          外观设置
+          {t('appearance')}
         </Typography>
         
         <FormControl fullWidth margin="normal">
-          <InputLabel>主题</InputLabel>
+          <InputLabel>{t('theme')}</InputLabel>
           <Select
             value={settings.theme}
             onChange={(e) => updateSetting('theme', e.target.value as any)}
-            label="主题"
+            label={t('theme')}
           >
-            <MenuItem value="light">浅色</MenuItem>
-            <MenuItem value="dark">深色</MenuItem>
-            <MenuItem value="auto">跟随系统</MenuItem>
+            <MenuItem value="light">{t('themeLight')}</MenuItem>
+            <MenuItem value="dark">{t('themeDark')}</MenuItem>
+            <MenuItem value="auto">{t('themeAuto')}</MenuItem>
           </Select>
         </FormControl>
 
         <FormControl fullWidth margin="normal">
-          <InputLabel>语言</InputLabel>
+          <InputLabel>{t('language')}</InputLabel>
           <Select
             value={settings.language}
             onChange={(e) => updateSetting('language', e.target.value as any)}
-            label="语言"
+            label={t('language')}
           >
-            <MenuItem value="zh">中文</MenuItem>
-            <MenuItem value="en">English</MenuItem>
+            <MenuItem value="zh">{t('languageZh')}</MenuItem>
+            <MenuItem value="en">{t('languageEn')}</MenuItem>
           </Select>
         </FormControl>
       </Paper>
@@ -255,6 +259,16 @@ const Settings: React.FC = () => {
           保存设置
         </Button>
       </Box>
+
+      {/* 导出对话框 */}
+      <ExportDialog
+        open={exportDialogOpen}
+        onClose={() => setExportDialogOpen(false)}
+        prompts={state.prompts}
+        categories={state.categories}
+        tags={state.tags}
+        onExport={handleExportConfirm}
+      />
     </Box>
   );
 };
