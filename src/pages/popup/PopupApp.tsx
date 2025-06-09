@@ -14,6 +14,8 @@ import {
   Chip,
   InputAdornment,
   CircularProgress,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -24,12 +26,24 @@ import {
   Delete as DeleteIcon,
 } from '@mui/icons-material';
 import { useApp } from '../../contexts/AppContext';
+import { useTranslation } from '../../hooks/useTranslation';
 import { Prompt } from '../../types';
+import { AddPromptDialog } from '../../components/popup/AddPromptDialog';
 
 const PopupApp: React.FC = () => {
   const { state, actions } = useApp();
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
-  const [showAddForm, setShowAddForm] = useState(false);
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: 'success' | 'error';
+  }>({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
 
   // 过滤提示词
   const filteredPrompts = state.prompts.filter(prompt => {
@@ -56,14 +70,40 @@ const PopupApp: React.FC = () => {
         },
       };
       await actions.savePrompt(updatedPrompt);
+
+      // 显示成功消息
+      setSnackbar({
+        open: true,
+        message: t('promptCopied'),
+        severity: 'success',
+      });
     } catch (error) {
       console.error('Failed to copy prompt:', error);
+      setSnackbar({
+        open: true,
+        message: '复制失败，请重试',
+        severity: 'error',
+      });
     }
   };
 
   // 打开选项页面
   const handleOpenOptions = () => {
     chrome.runtime.openOptionsPage();
+  };
+
+  // 处理添加提示词成功
+  const handleAddSuccess = () => {
+    setSnackbar({
+      open: true,
+      message: t('promptSaved'),
+      severity: 'success',
+    });
+  };
+
+  // 关闭提示消息
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
   };
 
   if (state.ui.loading) {
@@ -102,7 +142,7 @@ const PopupApp: React.FC = () => {
         <TextField
           fullWidth
           size="small"
-          placeholder="搜索提示词..."
+          placeholder={t('searchPlaceholder')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           InputProps={{
@@ -127,7 +167,7 @@ const PopupApp: React.FC = () => {
             p={3}
           >
             <Typography variant="body2" color="text.secondary" align="center">
-              {searchQuery ? '没有找到匹配的提示词' : '还没有提示词，点击下方按钮添加'}
+              {searchQuery ? t('noPromptsFound') : t('noPromptsYet')}
             </Typography>
           </Box>
         ) : (
@@ -205,7 +245,7 @@ const PopupApp: React.FC = () => {
                   </IconButton>
                   <Box sx={{ flexGrow: 1 }} />
                   <Typography variant="caption" color="text.secondary">
-                    {prompt.version} • 使用 {prompt.metadata.usageCount} 次
+                    {prompt.version} • {t('usageCount', { count: prompt.metadata.usageCount })}
                   </Typography>
                 </Box>
               </ListItem>
@@ -223,10 +263,35 @@ const PopupApp: React.FC = () => {
           bottom: 16,
           right: 16,
         }}
-        onClick={handleOpenOptions}
+        onClick={() => setShowAddDialog(true)}
+        title={t('addPrompt')}
       >
         <AddIcon />
       </Fab>
+
+      {/* 添加提示词对话框 */}
+      <AddPromptDialog
+        open={showAddDialog}
+        onClose={() => setShowAddDialog(false)}
+        onSuccess={handleAddSuccess}
+      />
+
+      {/* 提示消息 */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
