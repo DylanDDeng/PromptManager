@@ -76,12 +76,23 @@ export interface StorageData {
   };
 }
 
+// Obsidian集成配置
+export interface ObsidianConfig {
+  vaultName: string;                  // Vault名称
+  enabled: boolean;                   // 是否启用Obsidian集成
+  autoOpen: boolean;                  // 是否自动打开Obsidian
+  folderStructure: 'flat' | 'category' | 'tags'; // 文件夹结构
+  includeFrontMatter: boolean;        // 是否包含Front Matter
+  includeBacklinks: boolean;          // 是否包含反向链接
+}
+
 // 用户设置
 export interface UserSettings {
   theme: 'light' | 'dark' | 'auto';   // 主题
   language: 'zh' | 'en';              // 语言
   defaultCategory: string;            // 默认分类
   autoBackup: boolean;                // 自动备份
+  obsidian: ObsidianConfig;           // Obsidian集成配置
   shortcuts: Record<string, string>;  // 快捷键设置
   ui: {
     showLineNumbers: boolean;         // 显示行号

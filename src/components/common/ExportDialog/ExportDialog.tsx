@@ -32,7 +32,7 @@ import {
 import { Prompt, Category, Tag } from '../../../types';
 import { useTranslation } from '../../../hooks/useTranslation';
 
-export type ExportFormat = 'json' | 'markdown' | 'csv';
+export type ExportFormat = 'json' | 'markdown' | 'csv' | 'obsidian';
 
 interface ExportItem {
   prompt: Prompt;
@@ -150,6 +150,7 @@ const ExportDialog: React.FC<ExportDialogProps> = ({
               <MenuItem value="json">JSON</MenuItem>
               <MenuItem value="markdown">Markdown</MenuItem>
               <MenuItem value="csv">CSV</MenuItem>
+              <MenuItem value="obsidian">Obsidian</MenuItem>
             </Select>
           </FormControl>
         </Box>

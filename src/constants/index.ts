@@ -59,6 +59,14 @@ export const DEFAULT_SETTINGS = {
   language: 'zh' as const,
   defaultCategory: 'writing',
   autoBackup: true,
+  obsidian: {
+    vaultName: '',
+    enabled: false,
+    autoOpen: true,
+    folderStructure: 'flat' as const,
+    includeFrontMatter: true,
+    includeBacklinks: false,
+  },
   shortcuts: {
     'open-prompt-manager': 'Ctrl+Shift+P',
     'quick-insert': 'Ctrl+Shift+I',

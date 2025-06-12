@@ -13,6 +13,7 @@ import {
   Divider,
   Alert,
   Paper,
+  TextField,
 } from '@mui/material';
 import { useApp } from '../../../contexts/AppContext';
 import { useTranslation } from '../../../hooks/useTranslation';
@@ -74,7 +75,13 @@ const Settings: React.FC = () => {
   // 执行导出
   const handleExportConfirm = async (items: ExportItem[], format: ExportFormat) => {
     try {
-      await exportService.exportData(items, state.categories, state.tags, format);
+      await exportService.exportData(
+        items,
+        state.categories,
+        state.tags,
+        format,
+        format === 'obsidian' ? state.settings.obsidian : undefined
+      );
       setSaveMessage(t('dataExported'));
       setTimeout(() => setSaveMessage(''), 3000);
     } catch (error) {
@@ -129,6 +136,85 @@ const Settings: React.FC = () => {
             <MenuItem value="en">{t('languageEn')}</MenuItem>
           </Select>
         </FormControl>
+      </Paper>
+
+      {/* Obsidian集成设置 */}
+      <Paper sx={{ p: 2, mb: 2 }}>
+        <Typography variant="h6" gutterBottom>
+          Obsidian集成
+        </Typography>
+
+        <FormControlLabel
+          control={
+            <Switch
+              checked={settings.obsidian?.enabled || false}
+              onChange={(e) => updateSetting('obsidian', {
+                ...settings.obsidian,
+                enabled: e.target.checked
+              })}
+            />
+          }
+          label="启用Obsidian集成"
+        />
+
+        {settings.obsidian?.enabled && (
+          <Box sx={{ mt: 2 }}>
+            <TextField
+              fullWidth
+              label="Vault名称"
+              value={settings.obsidian?.vaultName || ''}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateSetting('obsidian', {
+                ...settings.obsidian,
+                vaultName: e.target.value
+              })}
+              margin="normal"
+              placeholder="例如：MyVault"
+              helperText="请输入你的Obsidian vault名称"
+            />
+
+            <FormControl fullWidth margin="normal">
+              <InputLabel>文件夹结构</InputLabel>
+              <Select
+                value={settings.obsidian?.folderStructure || 'flat'}
+                onChange={(e) => updateSetting('obsidian', {
+                  ...settings.obsidian,
+                  folderStructure: e.target.value as any
+                })}
+                label="文件夹结构"
+              >
+                <MenuItem value="flat">扁平结构（所有文件在根目录）</MenuItem>
+                <MenuItem value="category">按分类创建文件夹</MenuItem>
+                <MenuItem value="tags">按标签分组</MenuItem>
+              </Select>
+            </FormControl>
+
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={settings.obsidian?.includeFrontMatter || false}
+                  onChange={(e) => updateSetting('obsidian', {
+                    ...settings.obsidian,
+                    includeFrontMatter: e.target.checked
+                  })}
+                />
+              }
+              label="包含Front Matter元数据"
+            />
+
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={settings.obsidian?.autoOpen || false}
+                  onChange={(e) => updateSetting('obsidian', {
+                    ...settings.obsidian,
+                    autoOpen: e.target.checked
+                  })}
+                />
+              }
+              label="自动打开Obsidian"
+            />
+          </Box>
+        )}
       </Paper>
 
       {/* 编辑器设置 */}

@@ -88,6 +88,20 @@ export const translations = {
     selectVersion: '选择特定版本',
     contentPreview: '内容预览',
     exportSelected: '导出 ({count})',
+
+    // Obsidian集成
+    obsidianIntegration: 'Obsidian集成',
+    enableObsidian: '启用Obsidian集成',
+    vaultName: 'Vault名称',
+    vaultNamePlaceholder: '例如：MyVault',
+    vaultNameHelper: '请输入你的Obsidian vault名称',
+    folderStructure: '文件夹结构',
+    flatStructure: '扁平结构（所有文件在根目录）',
+    categoryStructure: '按分类创建文件夹',
+    tagStructure: '按标签分组',
+    includeFrontMatter: '包含Front Matter元数据',
+    autoOpenObsidian: '自动打开Obsidian',
+    exportToObsidian: '导出到Obsidian',
     
     // 消息
     promptSaved: '提示词保存成功',
@@ -206,6 +220,20 @@ export const translations = {
     selectVersion: 'Select specific version',
     contentPreview: 'Content Preview',
     exportSelected: 'Export ({count})',
+
+    // Obsidian integration
+    obsidianIntegration: 'Obsidian Integration',
+    enableObsidian: 'Enable Obsidian Integration',
+    vaultName: 'Vault Name',
+    vaultNamePlaceholder: 'e.g.: MyVault',
+    vaultNameHelper: 'Enter your Obsidian vault name',
+    folderStructure: 'Folder Structure',
+    flatStructure: 'Flat structure (all files in root)',
+    categoryStructure: 'Create folders by category',
+    tagStructure: 'Group by tags',
+    includeFrontMatter: 'Include Front Matter metadata',
+    autoOpenObsidian: 'Auto open Obsidian',
+    exportToObsidian: 'Export to Obsidian',
     
     // Messages
     promptSaved: 'Prompt saved successfully',
