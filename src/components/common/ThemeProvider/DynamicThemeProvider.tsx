@@ -1,11 +1,12 @@
-import React from 'react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import React, { useMemo } from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { useApp } from '../../../contexts/AppContext';
+import { lightTheme, darkTheme } from '../../../theme/modernTheme';
 
 interface DynamicThemeProviderProps {
   children: React.ReactNode;
-  customStyles?: any;
+  customStyles?: Record<string, unknown>;
 }
 
 const DynamicThemeProvider: React.FC<DynamicThemeProviderProps> = ({ 
@@ -14,27 +15,36 @@ const DynamicThemeProvider: React.FC<DynamicThemeProviderProps> = ({
 }) => {
   const { state } = useApp();
   
-  // 根据状态创建动态主题
-  const theme = createTheme({
-    palette: {
-      mode: state.ui.theme, // 使用动态主题
-    },
-    components: {
-      MuiCssBaseline: {
-        styleOverrides: {
-          body: {
-            margin: 0,
-            padding: 0,
-            ...customStyles,
+  // 根据状态选择现代化主题
+  const theme = useMemo(() => {
+    const baseTheme = state.ui.theme === 'dark' ? darkTheme : lightTheme;
+    
+    // 如果有自定义样式，合并到主题中
+    if (customStyles) {
+      return {
+        ...baseTheme,
+        components: {
+          ...baseTheme.components,
+          MuiCssBaseline: {
+            styleOverrides: {
+              body: {
+                margin: 0,
+                padding: 0,
+                fontFamily: baseTheme.typography.fontFamily,
+                ...customStyles,
+              },
+            },
           },
         },
-      },
-    },
-  });
+      };
+    }
+    
+    return baseTheme;
+  }, [state.ui.theme, customStyles]);
 
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
+      <CssBaseline enableColorScheme />
       {children}
     </ThemeProvider>
   );

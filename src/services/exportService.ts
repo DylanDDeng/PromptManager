@@ -58,8 +58,14 @@ class ExportService {
           description: item.prompt.description,
           category: item.prompt.category,
           tags: item.prompt.tags,
+          variables: item.prompt.variables || [],
           version: item.prompt.version,
           versions: item.prompt.versions, // 包含版本历史
+          metadata: item.prompt.metadata || {
+            usageCount: 0,
+            isFavorite: false,
+            isTemplate: false,
+          },
           createdAt: item.prompt.createdAt,
           updatedAt: item.prompt.updatedAt,
         };
@@ -75,7 +81,14 @@ class ExportService {
             description: item.prompt.description,
             category: item.prompt.category,
             tags: item.prompt.tags,
+            variables: item.prompt.variables || [],
             version: item.prompt.version,
+            versions: item.prompt.versions,
+            metadata: item.prompt.metadata || {
+              usageCount: 0,
+              isFavorite: false,
+              isTemplate: false,
+            },
             createdAt: item.prompt.createdAt,
             updatedAt: item.prompt.updatedAt,
           };
@@ -88,8 +101,16 @@ class ExportService {
           description: targetVersion.description,
           category: item.prompt.category,
           tags: item.prompt.tags,
+          variables: item.prompt.variables || [],
           version: targetVersion.version,
+          versions: [targetVersion], // 只包含目标版本
+          metadata: item.prompt.metadata || {
+            usageCount: 0,
+            isFavorite: false,
+            isTemplate: false,
+          },
           createdAt: targetVersion.createdAt,
+          updatedAt: targetVersion.createdAt,
         };
       }
     });

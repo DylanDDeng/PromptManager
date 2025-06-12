@@ -2,7 +2,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { AppProvider } from '../../contexts/AppContext';
 import { DynamicThemeProvider } from '../../components/common/ThemeProvider';
-import PopupApp from './PopupApp';
+import ModernPopupApp from './ModernPopupApp';
 
 // Popup页面的自定义样式
 const popupStyles = {
@@ -18,7 +18,7 @@ if (container) {
     <React.StrictMode>
       <AppProvider>
         <DynamicThemeProvider customStyles={popupStyles}>
-          <PopupApp />
+          <ModernPopupApp />
         </DynamicThemeProvider>
       </AppProvider>
     </React.StrictMode>
